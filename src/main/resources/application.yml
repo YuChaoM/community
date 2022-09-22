@@ -1,0 +1,30 @@
+#ServerProperites
+server:
+  port: 8080
+  servlet:
+    context-path: /community
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/community?serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    type: com.zaxxer.hikari.HikariDataSource #springboot内置的性能最好的连接池
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 5
+      idle-timeout: 30000  #连接空闲30000ms才关掉
+
+  thymeleaf:
+    cache: false #ThymeleafProperites
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    use-generated-keys: true #启用自动生成主键
+    map-underscore-to-camel-case: true  #驼峰命名转换 字段与实体的匹配
+  type-aliases-package: com.yuchao.community.entity  #resultType可以使用类名
