@@ -42,7 +42,8 @@
 
     <update id="updatePassword">
         update user
-        set password = #{password}
+        set password = #{password},
+            salt     = #{salt}
         where id = #{id}
     </update>
 

@@ -7,7 +7,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/community?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/community?serverTimezone=Asia/Shanghai #UTC会差8个小时
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
@@ -20,6 +20,13 @@ spring:
   thymeleaf:
     cache: false #ThymeleafProperites
 
+  mail:
+    host: smtp.sina.com
+    port: 465
+    username: memgyuchao@sina.com
+    password: 132c7e27c93073b3
+    protocol: smtps
+    properties.mail.smtp.ssl.enable: true
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -28,3 +35,15 @@ mybatis:
     use-generated-keys: true #启用自动生成主键
     map-underscore-to-camel-case: true  #驼峰命名转换 字段与实体的匹配
   type-aliases-package: com.yuchao.community.entity  #resultType可以使用类名
+
+
+#logging:
+#  level:
+#    com.yuchao: debug
+#  file:
+#    path: spring.log
+
+
+community.path:
+  domain: http://localhost:8080
+  upload: E:\Users\Desktop\community\image

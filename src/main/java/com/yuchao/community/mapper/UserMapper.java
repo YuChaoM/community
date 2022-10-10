@@ -5,6 +5,8 @@ import com.yuchao.community.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 /**
  * @author 蒙宇潮
  * @create 2022-09-20  10:50
@@ -24,7 +26,8 @@ public interface UserMapper {
 
     int updateAvatarUrl(@Param("id") Integer id, @Param("url") String url);
 
-    int updatePassword(@Param("id") Integer id, @Param("password") String password);
+    int updatePassword(@Param("id") Integer id, @Param("password") String password,@Param("salt") String salt);
+
 
 
 }

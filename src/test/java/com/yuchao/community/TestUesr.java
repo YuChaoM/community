@@ -2,6 +2,7 @@ package com.yuchao.community;
 
 import com.yuchao.community.entity.User;
 import com.yuchao.community.mapper.UserMapper;
+import com.yuchao.community.util.CommunityUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,9 +46,18 @@ public class TestUesr {
 
     @Test
     public void testUpdate() {
-        System.out.println(userMapper.updateStatus(151, 1));
-        System.out.println(userMapper.updateAvatarUrl(151,"http://yuchao/abc.jpg"));
-        System.out.println(userMapper.updatePassword(151, "abc123"));
+//        System.out.println(userMapper.updateStatus(151, 1));
+//        System.out.println(userMapper.updateAvatarUrl(151,"http://yuchao/abc.jpg"));
+        String salt = CommunityUtil.generateUUID().substring(0, 5);
+        String password = CommunityUtil.md5("123456" + salt);
+        System.out.println(userMapper.updatePassword(158, password,salt));
 
+    }
+
+    @Test
+    public void test(){
+        Integer x = 255;
+        Integer y = 255;
+        System.out.println(x == y);
     }
 }
