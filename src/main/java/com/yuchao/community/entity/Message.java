@@ -7,18 +7,16 @@ import java.util.Date;
 
 /**
  * @author 蒙宇潮
- * @create 2022-10-10  14:44
+ * @create 2022-10-12  23:02
  */
-
 @Data
 @ToString
-public class Comment {
+public class Message {
 
     private Integer id;
-    private Integer userId;
-    private Integer entityType;
-    private Integer entityId;
-    private int targetId;
+    private Integer fromId;
+    private Integer toId;
+    private String conversationId;
     private String content;
     private Integer status;
     private Date createTime;

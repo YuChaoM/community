@@ -49,8 +49,6 @@ public class DiscussPostController implements CommunityConstant {
         post.setTitle(title);
         post.setContent(content);
         post.setCreateTime(new Date());
-        post.setType(0);//没有默认值，要设置一下
-        post.setStatus(0);
         discussPostService.addDiscussPost(post);
         //后面再对错误统一处理
         return CommunityUtil.getJSONString(0, "发布成功!");
@@ -85,6 +83,7 @@ public class DiscussPostController implements CommunityConstant {
                         //回复的Vo
                         HashMap<String, Object> replyVo = new HashMap<>();
                         replyVo.put("reply", reply);
+                        //发回复的人
                         replyVo.put("user", userSevice.findUserById(reply.getUserId()));
                         //回复谁
                         User target = reply.getTargetId() == 0 ? null : userSevice.findUserById(reply.getTargetId());

@@ -42,4 +42,9 @@
         from discuss_post
         where id = #{id}
     </select>
+
+    <update id="updateCommentCountById" parameterType="integer">
+        update discuss_post set comment_count = comment_count + 1
+        where id = #{entityId}
+    </update>
 </mapper>
