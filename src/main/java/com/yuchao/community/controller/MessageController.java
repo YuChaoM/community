@@ -6,18 +6,15 @@ import com.yuchao.community.entity.User;
 import com.yuchao.community.mapper.MessageMapper;
 import com.yuchao.community.service.MessageService;
 import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.util.CommunityConstant;
+import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.HostHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 蒙宇潮
@@ -25,7 +22,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/message")
-public class MessageController {
+public class MessageController implements CommunityConstant {
 
     @Resource
     private MessageService messageService;
@@ -40,7 +37,6 @@ public class MessageController {
         page.setPath("/message/list");
         page.setLimit(5);
         page.setRows(messageService.findConversationCount(user.getId()));
-
         //会话列表
         List<Message> conversationList = messageService.findConversations(user.getId(), page.getOffset(), page.getLimit());
         List<Map<String, Object>> conversations = new ArrayList<>();
@@ -51,7 +47,7 @@ public class MessageController {
                 map.put("letterCount", messageService.findLetterCount(message.getConversationId()));
                 map.put("unreadCount", messageService.findLetterUnreadCount(user.getId(), message.getConversationId()));
                 //获取对方的信息
-                int targetId = user.getId() == message.getFromId() ? message.getToId() : message.getFromId();
+                int targetId = user.getId().intValue() == message.getFromId() ? message.getToId() : message.getFromId();
                 map.put("target", userSevice.findUserById(targetId));
                 conversations.add(map);
             }
@@ -82,7 +78,24 @@ public class MessageController {
         model.addAttribute("letters", letters);
         model.addAttribute("target", getLetterTarget(conversationId));
 
+        // 设置已读
+        List<Integer> ids = getLetterIds(letterList);
+        if (!ids.isEmpty()) {
+            messageService.updateStatus(ids,1);
+        }
         return "/site/letter-detail";
+    }
+
+    private List<Integer> getLetterIds(List<Message> letterList) {
+        ArrayList<Integer> ids = new ArrayList<>();
+        if (letterList != null) {
+            for (Message message : letterList) {
+                if (hostHolder.getUser().getId() == message.getToId() && message.getStatus() == 0) {
+                    ids.add(message.getId());
+                }
+            }
+        }
+        return ids;
     }
 
     private User getLetterTarget(String conversationId) {
@@ -97,5 +110,33 @@ public class MessageController {
         }
 
     }
+
+    @PostMapping("/add")
+    @ResponseBody
+    public String addMessage(String toName, String content) {
+        User fromUser = hostHolder.getUser();
+        User toUser = userSevice.findUserByName(toName);
+        if (toUser == null) {
+            return CommunityUtil.getJSONString(ACCEPTED, "目标用户不存在");
+        }
+        Message message = new Message();
+        message.setFromId(fromUser.getId());
+        message.setToId(toUser.getId());
+        message.setContent(content);
+        message.setConversationId(getConversationId(fromUser, toUser));
+        message.setCreateTime(new Date());
+        message.setStatus(0);
+        messageService.addMessage(message);
+        return CommunityUtil.getJSONString(SUCCESS);
+    }
+
+    private String getConversationId(User fromUser, User toUser) {
+        if (fromUser.getId() < toUser.getId()) {
+            return fromUser.getId() + "_" + toUser.getId();
+        } else {
+            return toUser.getId() + "_" + fromUser.getId();
+        }
+    }
+
 
 }

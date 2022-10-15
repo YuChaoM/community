@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.yuchao.community.anntoation.LoginReuquired;
 import com.yuchao.community.entity.User;
 import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.HostHolder;
 import com.yuchao.community.util.MailClient;
@@ -30,7 +31,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -126,13 +127,13 @@ public class UserController {
     public String getEmialCode(String email, HttpSession session) {
         if (StringUtils.isBlank(email)) {
             //返回json
-            return CommunityUtil.getJSONString(501,"邮箱不能为空!");
+            return CommunityUtil.getJSONString(ACCEPTED,"邮箱不能为空!");
         }
         String code = CommunityUtil.generateUUID().substring(0, 5);
         session.setAttribute("code",code);
         userSevice.sendEmailCode(email,code);
         //放回响应状态
-        return CommunityUtil.getJSONString(200, "发送给成功!");
+        return CommunityUtil.getJSONString(SUCCESS, "发送给成功!");
     }
 
     @PostMapping("/forget")

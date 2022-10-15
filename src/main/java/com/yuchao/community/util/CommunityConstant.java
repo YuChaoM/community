@@ -34,4 +34,23 @@ public interface CommunityConstant {
      * 评论
      */
     int ENTITY_TYPE_COMMENT = 2;
+
+    /**
+     * 成功
+     */
+    int SUCCESS = 200;
+
+    /**
+     * 请求被接收处理，但是改处理不完整
+     */
+    int ACCEPTED = 202;
+
+    /**
+     * 禁止访问
+     */
+    int FORBIDDEN = 403;
+
+    int SERVER_ERROR = 500;
+
+
 }

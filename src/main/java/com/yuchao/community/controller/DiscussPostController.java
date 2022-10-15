@@ -42,7 +42,7 @@ public class DiscussPostController implements CommunityConstant {
     public String addDiscussPost(String title,String content){
         User user = hostHolder.getUser();
         if (user == null) {
-            return CommunityUtil.getJSONString(403, "还没有登陆哦");
+            return CommunityUtil.getJSONString(FORBIDDEN, "还没有登陆哦");
         }
         DiscussPost post = new DiscussPost();
         post.setUserId(user.getId());
@@ -51,7 +51,7 @@ public class DiscussPostController implements CommunityConstant {
         post.setCreateTime(new Date());
         discussPostService.addDiscussPost(post);
         //后面再对错误统一处理
-        return CommunityUtil.getJSONString(0, "发布成功!");
+        return CommunityUtil.getJSONString(SUCCESS, "发布成功!");
     }
 
     @GetMapping("/detail/{id}")

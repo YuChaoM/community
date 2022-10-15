@@ -190,4 +190,7 @@ public class UserSevice implements CommunityConstant {
     }
 
 
+    public User findUserByName(String name) {
+        return userMapper.selectByName(name);
+    }
 }
