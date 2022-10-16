@@ -13,11 +13,11 @@ import java.util.Date;
 @ToString
 public class Message {
 
-    private Integer id;
-    private Integer fromId;
-    private Integer toId;
+    private int id;
+    private int fromId;
+    private int toId;
     private String conversationId;
     private String content;
-    private Integer status;
+    private int status;
     private Date createTime;
 }

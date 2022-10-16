@@ -47,7 +47,7 @@ public class MessageController implements CommunityConstant {
                 map.put("letterCount", messageService.findLetterCount(message.getConversationId()));
                 map.put("unreadCount", messageService.findLetterUnreadCount(user.getId(), message.getConversationId()));
                 //获取对方的信息
-                int targetId = user.getId().intValue() == message.getFromId() ? message.getToId() : message.getFromId();
+                int targetId = user.getId() == message.getFromId() ? message.getToId() : message.getFromId();
                 map.put("target", userSevice.findUserById(targetId));
                 conversations.add(map);
             }
@@ -81,7 +81,7 @@ public class MessageController implements CommunityConstant {
         // 设置已读
         List<Integer> ids = getLetterIds(letterList);
         if (!ids.isEmpty()) {
-            messageService.updateStatus(ids,1);
+            messageService.updateStatus(ids, 1);
         }
         return "/site/letter-detail";
     }
@@ -136,6 +136,13 @@ public class MessageController implements CommunityConstant {
         } else {
             return toUser.getId() + "_" + fromUser.getId();
         }
+    }
+
+    @DeleteMapping("/delete")
+    @ResponseBody
+    public String deleteMessageById(int id) {
+        messageService.deleteMessageById(id);
+        return CommunityUtil.getJSONString(SUCCESS);
     }
 
 

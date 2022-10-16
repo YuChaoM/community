@@ -30,5 +30,7 @@ public interface MessageMapper {
 
     int updateStatus(@Param("ids") List<Integer> ids,@Param("status") int status);
 
+    int deleteMessageById(int id);
+
 }
 

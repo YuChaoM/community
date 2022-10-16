@@ -76,7 +76,7 @@ public class UserSevice implements CommunityConstant {
         //开始注册
         user.setSalt(CommunityUtil.generateUUID().substring(0, 5));
         user.setPassword(CommunityUtil.md5(user.getPassword() + user.getSalt()));
-        user.setType(0);//0普通用户 1超级管理员 0版主
+        user.setType(0);//0普通用户 1超级管理员 2版主
         user.setStatus(0);//0未激活，1以激活
         user.setActivationCode(CommunityUtil.generateUUID());
         user.setAvatarUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));

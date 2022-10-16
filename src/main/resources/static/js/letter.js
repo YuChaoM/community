@@ -1,6 +1,6 @@
 $(function () {
     $("#sendBtn").click(send_letter);
-    $(".close").click(delete_msg);
+    $(".deleteBtn").click(delete_msg);
 });
 
 function send_letter() {
@@ -30,5 +30,23 @@ function send_letter() {
 
 function delete_msg() {
     // TODO 删除数据
-    $(this).parents(".media").remove();
+    // $(this).parents(".media").remove();
+    // var id = $("#letterId").val();
+    var btn = this;
+    var id = $(btn).prev().val();
+    $.ajax({
+            url: CONTEXT_PATH + "/message/delete",
+            data: {"id": id},
+            type: "DELETE",
+            dataType: "JSON",
+            success: function (data) {
+                console.log(data)
+                if (data.code == 200) {
+                    $(btn).parents(".media").remove();
+                } else {
+                    alert(data.msg);
+                }
+            }
+        }
+    )
 }
