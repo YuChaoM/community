@@ -16,10 +16,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author 蒙宇潮
@@ -156,25 +153,25 @@ public class UserSevice implements CommunityConstant {
         return userMapper.updateAvatarUrl(userId, avatarUrl);
     }
 
-    public int updatePassword(Integer userId,String password,String salt) {
-        return userMapper.updatePassword(userId, password,salt);
+    public int updatePassword(Integer userId, String password, String salt) {
+        return userMapper.updatePassword(userId, password, salt);
     }
 
     public void sendEmailCode(String email, String code) {
         Context context = new Context();
-        context.setVariable("email",email);
+        context.setVariable("email", email);
         context.setVariable("code", code);
         String process = templateEngine.process("/mail/forget", context);
-        mailClient.sendMail(email,"【忘记密码验证】",process);
+        mailClient.sendMail(email, "【忘记密码验证】", process);
     }
 
-    public Map<String,Object> forgetPassword(String email,String newPassword) {
+    public Map<String, Object> forgetPassword(String email, String newPassword) {
         HashMap<String, Object> map = new HashMap<>();
         if (StringUtils.isBlank(email)) {
             map.put("emailMsg", "邮箱不能为空！");
             return map;
         }
-        if (StringUtils.isBlank(newPassword)){
+        if (StringUtils.isBlank(newPassword)) {
             map.put("passwordMsg", "密码不能为空！");
             return map;
         }

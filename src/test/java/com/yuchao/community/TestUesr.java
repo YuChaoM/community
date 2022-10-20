@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -51,7 +52,6 @@ public class TestUesr {
         String salt = CommunityUtil.generateUUID().substring(0, 5);
         String password = CommunityUtil.md5("123456" + salt);
         System.out.println(userMapper.updatePassword(158, password,salt));
-
     }
 
     @Test

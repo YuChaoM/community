@@ -6,9 +6,13 @@ import com.yuchao.community.entity.User;
 import com.yuchao.community.mapper.DiscussPostMapper;
 import com.yuchao.community.mapper.UserMapper;
 import com.yuchao.community.service.DiscussPostService;
+import com.yuchao.community.service.LikeService;
 import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.util.CommunityConstant;
+import com.yuchao.community.util.RedisKeyUtil;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,13 +28,14 @@ import java.util.Map;
  * @create 2022-09-21  17:39
  */
 @Controller
-public class HomeController {
+public class HomeController implements CommunityConstant {
 
     @Resource
     private DiscussPostService discussPostService;
-
     @Resource
     private UserSevice userSevice;
+    @Autowired
+    private LikeService likeService;
 
 
     @GetMapping({"/index","/"})
@@ -45,6 +50,8 @@ public class HomeController {
             User user = userSevice.findUserById(post.getUserId());
             map.put("user", user);
             map.put("post", post);
+            Long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST,post.getId());
+            map.put("likeCount", likeCount);
             discussPosts.add(map);
         }
         model.addAttribute("discussPosts", discussPosts);
