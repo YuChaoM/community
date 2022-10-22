@@ -26,14 +26,15 @@ public class LikeController implements CommunityConstant {
 
     @PostMapping("/like")
     @ResponseBody
-    public String like(int entityType, int entityId) {
+    public String like(int entityType, int entityId,int entityUserId) {
         User user = hostHolder.getUser();
         // 点赞/取消 这里可能发生空指针异常，同一处理了
-        likeService.like(user.getId(), entityType,entityId);
+        likeService.like(user.getId(), entityType,entityId,entityUserId);
         //数量
         long likeCount = likeService.findEntityLikeCount(entityType, entityId);
         //状态
         int likeStatus = likeService.findEntityStatus(user.getId(), entityType, entityId);
+
         HashMap<String, Object> map = new HashMap<>();
         map.put("likeCount", likeCount);
         map.put("likeStatus", likeStatus);

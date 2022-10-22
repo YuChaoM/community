@@ -76,6 +76,7 @@ public class RedisTest {
         System.out.println(redisTemplate.opsForSet().pop(key));
         System.out.println(redisTemplate.opsForSet().members(key));
         System.out.println(redisTemplate.opsForSet().isMember(key, "刘备"));
+        redisTemplate.opsForSet().remove("赵云");
 
     }
 
@@ -89,9 +90,9 @@ public class RedisTest {
 
         System.out.println(redisTemplate.opsForZSet().zCard(key));
         System.out.println(redisTemplate.opsForZSet().score(key, "刘备"));
-        ;
+
         System.out.println(redisTemplate.opsForZSet().score(key, "刘备aa"));
-        ;
+        redisTemplate.opsForZSet().remove("关于");
         //返回排名
         System.out.println(redisTemplate.opsForZSet().reverseRank(key, "关于"));
         System.out.println(redisTemplate.opsForZSet().reverseRange(key, 0, 2));
@@ -135,6 +136,8 @@ public class RedisTest {
                 redisOperations.multi();
                 redisOperations.opsForSet().add(key, "zhansan");
                 redisOperations.opsForSet().add(key, "yuchao");
+                redisOperations.opsForValue().set("aa","aa");
+                redisOperations.opsForValue().increment("aa");//出错不影响执行
                 redisOperations.opsForSet().add(key, "wangwu");
                 //不要在事务中进行查询，不会立即返回结果
                 System.out.println(redisOperations.opsForSet().members(key));

@@ -3,6 +3,7 @@ package com.yuchao.community.controller;
 import com.fasterxml.jackson.databind.Module;
 import com.yuchao.community.anntoation.LoginReuquired;
 import com.yuchao.community.entity.User;
+import com.yuchao.community.service.LikeService;
 import com.yuchao.community.service.UserSevice;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
@@ -46,6 +47,8 @@ public class UserController implements CommunityConstant {
     private UserSevice userSevice;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private LikeService likeService;
 
     @LoginReuquired
     @GetMapping("/setting")
@@ -157,5 +160,16 @@ public class UserController implements CommunityConstant {
         }
     }
 
+    @GetMapping("/profile/{userId}")
+    public String getProfilePage(@PathVariable("userId") int userId,Model model) {
+        User user = userSevice.findUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("用户不存在");
+        }
+        int userLikeCount = likeService.findUserLikeCount(userId);
+        model.addAttribute("user", user);
+        model.addAttribute("likeCount", userLikeCount);
+        return "/site/profile";
+    }
 
 }

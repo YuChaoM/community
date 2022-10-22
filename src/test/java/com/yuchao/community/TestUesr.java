@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author 蒙宇潮
@@ -51,13 +53,18 @@ public class TestUesr {
 //        System.out.println(userMapper.updateAvatarUrl(151,"http://yuchao/abc.jpg"));
         String salt = CommunityUtil.generateUUID().substring(0, 5);
         String password = CommunityUtil.md5("123456" + salt);
-        System.out.println(userMapper.updatePassword(158, password,salt));
+        System.out.println(userMapper.updatePassword(158, password, salt));
     }
 
     @Test
-    public void test(){
+    public void test() {
         Integer x = 255;
         Integer y = 255;
         System.out.println(x == y);
+//        Integer b = null;
+//        int a = b;
+        Map map = new HashMap<>();
+        map.put("a", 1);
+//        System.out.println(a );
     }
 }
