@@ -4,6 +4,7 @@ import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -16,13 +17,13 @@ import java.io.PrintWriter;
  * @author 蒙宇潮
  * @create 2022-10-14  10:42
  */
-@ControllerAdvice(annotations = ControllerAdvice.class)
+@ControllerAdvice(annotations = Controller.class)
 public class ExceptionAdvice implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(ExceptionAdvice.class);
 
-    @ExceptionHandler(Exception.class)
-    public void handelException(HttpServletRequest request, HttpServletResponse response, Exception e) throws IOException {
+    @ExceptionHandler({Exception.class})
+    public void handleException(HttpServletRequest request, HttpServletResponse response, Exception e) throws IOException {
         //记录日志
         logger.error("服务器发生异常:" + e.getMessage());
         for (StackTraceElement element : e.getStackTrace()) {

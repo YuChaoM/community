@@ -3,6 +3,7 @@ package com.yuchao.community.controller;
 import com.fasterxml.jackson.databind.Module;
 import com.yuchao.community.anntoation.LoginReuquired;
 import com.yuchao.community.entity.User;
+import com.yuchao.community.service.FollowService;
 import com.yuchao.community.service.LikeService;
 import com.yuchao.community.service.UserSevice;
 import com.yuchao.community.util.CommunityConstant;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -49,6 +51,8 @@ public class UserController implements CommunityConstant {
     private HostHolder hostHolder;
     @Autowired
     private LikeService likeService;
+    @Resource
+    private FollowService followService;
 
     @LoginReuquired
     @GetMapping("/setting")
@@ -169,6 +173,18 @@ public class UserController implements CommunityConstant {
         int userLikeCount = likeService.findUserLikeCount(userId);
         model.addAttribute("user", user);
         model.addAttribute("likeCount", userLikeCount);
+        //关注数量
+        long followeeCount = followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
+        //粉丝的数量
+        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
+        //是否已关注
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+        }
+        model.addAttribute("followeeCount", followeeCount);
+        model.addAttribute("followerCount", followerCount);
+        model.addAttribute("hasFollowed", hasFollowed);
         return "/site/profile";
     }
 
