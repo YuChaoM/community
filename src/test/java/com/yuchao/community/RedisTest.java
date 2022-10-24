@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -93,9 +94,11 @@ public class RedisTest {
 
         System.out.println(redisTemplate.opsForZSet().score(key, "刘备aa"));
         redisTemplate.opsForZSet().remove("关于");
-        //返回排名
+        //获取倒序排列的索引值
         System.out.println(redisTemplate.opsForZSet().reverseRank(key, "关于"));
-        System.out.println(redisTemplate.opsForZSet().reverseRange(key, 0, 2));
+        //返回倒序指定区间元素 set redis自己实现了
+        Set set = redisTemplate.opsForZSet().reverseRange(key, 0, 2);
+        System.out.println();
 
     }
 
