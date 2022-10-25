@@ -1,6 +1,5 @@
 package com.yuchao.community.service;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.yuchao.community.entity.LoginTicket;
 import com.yuchao.community.entity.User;
 import com.yuchao.community.mapper.LoginTicketMapper;
@@ -8,15 +7,20 @@ import com.yuchao.community.mapper.UserMapper;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.MailClient;
+import com.yuchao.community.util.RedisKeyUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * @author 蒙宇潮
@@ -31,8 +35,10 @@ public class UserSevice implements CommunityConstant {
     private MailClient mailClient;
     @Autowired
     private TemplateEngine templateEngine;
+    //    @Resource
+//    private LoginTicketMapper loginTicketMapper;
     @Resource
-    private LoginTicketMapper loginTicketMapper;
+    private RedisTemplate redisTemplate;
 
     @Value("${community.path.domain}")
     private String domain;
@@ -40,7 +46,12 @@ public class UserSevice implements CommunityConstant {
     private String contextPath;
 
     public User findUserById(Integer userId) {
-        return userMapper.selectById(userId);
+//        return userMapper.selectById(userId);
+        User user = getCachce(userId);
+        if (user == null) {
+            user = initCache(userId);
+        }
+        return user;
     }
 
     public Map<String, Object> register(User user) {
@@ -97,6 +108,7 @@ public class UserSevice implements CommunityConstant {
         User user = userMapper.selectById(userId);
         if (user.getActivationCode().equals(code)) {
             userMapper.updateStatus(userId, 1);
+            clearCache(userId);
             return ACTIVATION_SUCCESS;
         } else if (user.getStatus() == 1) {
             return ACTIVATION_REPEAT;
@@ -135,26 +147,38 @@ public class UserSevice implements CommunityConstant {
         loginTicket.setTicket(CommunityUtil.generateUUID());
         loginTicket.setStatus(0);//0-有效 1-无效
         loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000l));
-        loginTicketMapper.insertLoginTicket(loginTicket);
+        String ticketKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
+        redisTemplate.opsForValue().set(ticketKey, loginTicket);
+//        loginTicketMapper.insertLoginTicket(loginTicket);
         map.put("ticket", loginTicket.getTicket());
         return map;
     }
 
 
     public void logout(String ticket) {
-        loginTicketMapper.updateLoginTicket(ticket, 1);
+//        loginTicketMapper.updateLoginTicket(ticket, 1);
+        String ticketKey = RedisKeyUtil.getTicketKey(ticket);
+        LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
+        loginTicket.setStatus(1);
+        redisTemplate.opsForValue().set(ticketKey, loginTicket);
     }
 
     public LoginTicket findLoginTicket(String ticket) {
-        return loginTicketMapper.selectByTicket(ticket);
+//        return loginTicketMapper.selectByTicket(ticket);
+        String ticketKey = RedisKeyUtil.getTicketKey(ticket);
+        return (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
     }
 
     public int updateAvatarUrl(Integer userId, String avatarUrl) {
-        return userMapper.updateAvatarUrl(userId, avatarUrl);
+        int rows = userMapper.updateAvatarUrl(userId, avatarUrl);
+        clearCache(userId);
+        return rows;
     }
 
     public int updatePassword(Integer userId, String password, String salt) {
-        return userMapper.updatePassword(userId, password, salt);
+        int rows = userMapper.updatePassword(userId, password, salt);
+        clearCache(userId);
+        return rows;
     }
 
     public void sendEmailCode(String email, String code) {
@@ -189,5 +213,25 @@ public class UserSevice implements CommunityConstant {
 
     public User findUserByName(String name) {
         return userMapper.selectByName(name);
+    }
+
+    //从缓存中取user
+    public User getCachce(int userId) {
+        String userKey = RedisKeyUtil.getUserKey(userId);
+        return (User) redisTemplate.opsForValue().get(userKey);
+    }
+
+    //初始化缓存
+    public User initCache(int userId) {
+        User user = userMapper.selectById(userId);
+        String userKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.opsForValue().set(userKey, user);
+        return user;
+    }
+
+    //删除缓存
+    public void clearCache(int userId) {
+        String userKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.delete(userKey);
     }
 }

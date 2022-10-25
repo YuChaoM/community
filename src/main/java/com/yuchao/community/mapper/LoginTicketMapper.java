@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
  * @create 2022-09-26  21:11
  */
 
+@Deprecated
 public interface LoginTicketMapper {
 
     @Select({

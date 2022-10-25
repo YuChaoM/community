@@ -2,11 +2,13 @@ package com.yuchao.community;
 
 import com.yuchao.community.entity.User;
 import com.yuchao.community.mapper.UserMapper;
+import com.yuchao.community.service.UserSevice;
 import com.yuchao.community.util.CommunityUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,9 +24,12 @@ public class TestUesr {
 
     @Autowired
     private UserMapper userMapper;
+    @Resource
+    private UserSevice userSevice;
 
     @Test
     public void testSelect() {
+        userSevice.findUserById(101);
         User user = userMapper.selectById(101);
         System.out.println(user);
         System.out.println(userMapper.selectByName("liubei"));
