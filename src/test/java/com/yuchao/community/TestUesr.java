@@ -61,15 +61,5 @@ public class TestUesr {
         System.out.println(userMapper.updatePassword(158, password, salt));
     }
 
-    @Test
-    public void test() {
-        Integer x = 255;
-        Integer y = 255;
-        System.out.println(x == y);
-//        Integer b = null;
-//        int a = b;
-        Map map = new HashMap<>();
-        map.put("a", 1);
-//        System.out.println(a );
-    }
+
 }

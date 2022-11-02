@@ -1,7 +1,9 @@
 package com.yuchao.community;
 
 import com.sun.javafx.image.impl.IntArgb;
+import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -21,6 +23,39 @@ public class BlockingQueueTest {
         new Thread(new Consumer(queue)).start();
         new Thread(new Consumer(queue)).start();
 
+    }
+
+    @Test
+    public void test() {
+
+        threeSumClosest(new int[]{-1, 2, 1, -4}, 1);
+    }
+
+    public int threeSumClosest(int[] nums, int target) {
+        int ans  = 0;
+        int pre = Integer.MAX_VALUE;
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
+            int sum = nums[i];
+            if(i > 0 && nums[i] == nums[i-1]) continue;
+            int j = i + 1;
+            int k = nums.length - 1;
+            while (j < k) {
+                int temp = nums[j] + nums[k];
+                if (sum + temp < target) {
+                    j++;
+                }else if(sum + temp > target) {
+                    k--;
+                }else {
+                    return sum + temp;
+                }
+                if(pre > Math.abs(sum + temp - target)) {
+                    ans = sum + temp;
+                    pre = Math.abs(sum + temp - target);
+                }
+            }
+        }
+        return ans;
     }
 }
 

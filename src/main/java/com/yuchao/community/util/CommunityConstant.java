@@ -7,7 +7,7 @@ package com.yuchao.community.util;
 public interface CommunityConstant {
 
     /**
-     *激活成功
+     * 激活成功
      */
     int ACTIVATION_SUCCESS = 0;
 
@@ -36,7 +36,7 @@ public interface CommunityConstant {
     int ENTITY_TYPE_COMMENT = 2;
 
     /**
-     * 评论
+     * 用户
      */
     int ENTITY_TYPE_USER = 3;
 
@@ -57,5 +57,23 @@ public interface CommunityConstant {
 
     int SERVER_ERROR = 500;
 
+    /**
+     * 主题：评论
+     */
+    String TOPIC_COMMENT = "comment";
 
+    /**
+     * 主题：点赞
+     */
+    String TOPIC_LIKE = "like";
+
+    /**
+     * 主题：关注
+     */
+    String TOPIC_FOLLOW = "follow";
+
+    /**
+     * 系统用户id
+     */
+    int SYSTEM_USER_ID = 1;
 }

@@ -1,6 +1,6 @@
 package com.yuchao.community.entity;
 
-import lombok.Data;
+
 
 /**
  * @author 蒙宇潮

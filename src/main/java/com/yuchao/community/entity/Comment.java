@@ -18,8 +18,8 @@ public class Comment {
     private Integer userId;
     private Integer entityType;
     private Integer entityId;
-    private int targetId;
+    private int targetId;//回复谁
     private String content;
-    private Integer status;
+    private int status;
     private Date createTime;
 }

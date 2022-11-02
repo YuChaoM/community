@@ -1,7 +1,9 @@
 package com.yuchao.community.controller;
 
+import com.yuchao.community.entity.Event;
 import com.yuchao.community.entity.Page;
 import com.yuchao.community.entity.User;
+import com.yuchao.community.event.EventProducer;
 import com.yuchao.community.service.FollowService;
 import com.yuchao.community.service.UserSevice;
 import com.yuchao.community.util.CommunityConstant;
@@ -32,6 +34,8 @@ public class FollowController implements CommunityConstant {
     private HostHolder hostHolder;
     @Resource
     private UserSevice userSevice;
+    @Resource
+    private EventProducer eventProducer;
 
     @PostMapping("/follow")
     @ResponseBody
@@ -39,6 +43,14 @@ public class FollowController implements CommunityConstant {
         User user = hostHolder.getUser();
 
         followService.follow(entityId, entityType, user.getId());
+        Event event = Event.builder()
+                .topic(TOPIC_FOLLOW)
+                .userId(user.getId())
+                .entityType(entityType)
+                .entityId(entityId)
+                .entityUserId(entityId)
+                .build();
+        eventProducer.fireEvent(event);
         return CommunityUtil.getJSONString(SUCCESS, "已关注!");
     }
 

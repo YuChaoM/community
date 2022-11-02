@@ -32,5 +32,12 @@ public interface MessageMapper {
 
     int deleteMessageById(int id);
 
+    Message selectLatestNotice(@Param("userId") int userId, @Param("topic") String topic);
+
+    int selectNoticeCount(@Param("userId") int userId, @Param("topic") String topic);
+
+    int selectUnreadNoticeCount(@Param("userId") int userId, @Param("topic") String topic);
+
+    List<Message> selectNotices(@Param("userId") int userId,@Param(("topic")) String topic, @Param("offset") int offset, @Param("limit") int limit);
 }
 

@@ -1,7 +1,7 @@
-function like(btn, entityType, entityId, userId) {
+function like(btn, entityType, entityId, userId,discussPostId) {
     $.post(
         CONTEXT_PATH + "/like",
-        {"entityType": entityType, "entityId": entityId, "entityUserId": userId},
+        {"entityType": entityType, "entityId": entityId, "entityUserId": userId,"discussPostId":discussPostId},
         function (data) {
             data = $.parseJSON(data);
             if (data.code == 200) {
