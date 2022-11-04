@@ -54,11 +54,12 @@ public class TestUesr {
 
     @Test
     public void testUpdate() {
-//        System.out.println(userMapper.updateStatus(151, 1));
-//        System.out.println(userMapper.updateAvatarUrl(151,"http://yuchao/abc.jpg"));
+        System.out.println(userMapper.updateStatus(151, 1));
+        System.out.println(userMapper.updateAvatarUrl(151,"http://yuchao/abc.jpg"));
         String salt = CommunityUtil.generateUUID().substring(0, 5);
         String password = CommunityUtil.md5("123456" + salt);
         System.out.println(userMapper.updatePassword(158, password, salt));
+
     }
 
 

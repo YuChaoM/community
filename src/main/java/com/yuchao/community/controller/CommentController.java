@@ -38,9 +38,9 @@ public class CommentController implements CommunityConstant {
     @Resource
     private EventProducer eventProducer;
 
-//    discussPostId可能会有一个异常，可能是非数
+    //    discussPostId可能会有一个异常，可能是非数
     @PostMapping("/add/{discussPostId}")
-    public String addComment(@PathVariable("discussPostId")Integer discussPostId, Comment comment) {
+    public String addComment(@PathVariable("discussPostId") Integer discussPostId, Comment comment) {
         User user = hostHolder.getUser();
         comment.setUserId(user.getId());
         comment.setCreateTime(new Date());
@@ -60,12 +60,24 @@ public class CommentController implements CommunityConstant {
         if (comment.getEntityType() == ENTITY_TYPE_POST) {
             DiscussPost target = discussPostService.findDiscussPostById(comment.getEntityId());
             event.setEntityUserId(target.getUserId());//给作者发通知
-        }else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
+        } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
 //            event.setEntityUserId(comment.getTargetId());//不行，回复楼主时id为0
             Comment target = commentService.findCommentById(comment.getEntityId());
             event.setEntityUserId(target.getUserId());
         }
         eventProducer.fireEvent(event);
+
+        if (comment.getEntityType() == ENTITY_TYPE_POST) {
+            //触发事件
+            event = Event.builder()
+                    .topic(TOPIC_PUBLISH)
+                    .userId(user.getId())
+                    .entityType(ENTITY_TYPE_POST)
+                    .entityId(discussPostId)
+                    .build();
+            eventProducer.fireEvent(event);
+        }
+
         return "redirect:/discuss/detail/" + discussPostId;
     }
 }

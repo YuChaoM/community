@@ -1,8 +1,11 @@
 package com.yuchao.community.event;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.yuchao.community.entity.DiscussPost;
 import com.yuchao.community.entity.Event;
 import com.yuchao.community.entity.Message;
+import com.yuchao.community.mapper.DiscussPostMapper;
+import com.yuchao.community.service.ElasticsearchService;
 import com.yuchao.community.service.MessageService;
 import com.yuchao.community.util.CommunityConstant;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -28,6 +31,8 @@ public class EventConsumer implements CommunityConstant {
 
     @Resource
     private MessageService messageService;
+    @Resource
+    private ElasticsearchService elasticsearchService;
 
     @KafkaListener(topics = {TOPIC_COMMENT, TOPIC_FOLLOW, TOPIC_LIKE})
     public void handleCommentMessage(ConsumerRecord record) {
@@ -62,5 +67,23 @@ public class EventConsumer implements CommunityConstant {
 
         message.setContent(JSONObject.toJSONString(content));
         messageService.addMessage(message);
+    }
+
+    @KafkaListener(topics = {TOPIC_PUBLISH})
+    public void handlePost(ConsumerRecord record) {
+        if (record == null || record.value() == null) {
+            logger.error("消息内容为空!");
+            return;
+        }
+
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null) {
+            logger.error("消息格式错误!");
+            return;
+        }
+
+        elasticsearchService.save(event.getEntityId());
+
+
     }
 }

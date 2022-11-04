@@ -1,9 +1,7 @@
 package com.yuchao.community.controller;
 
-import com.yuchao.community.entity.Comment;
-import com.yuchao.community.entity.DiscussPost;
-import com.yuchao.community.entity.Page;
-import com.yuchao.community.entity.User;
+import com.yuchao.community.entity.*;
+import com.yuchao.community.event.EventProducer;
 import com.yuchao.community.service.CommentService;
 import com.yuchao.community.service.DiscussPostService;
 import com.yuchao.community.service.LikeService;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -39,6 +38,8 @@ public class DiscussPostController implements CommunityConstant {
     private CommentService commentService;
     @Autowired
     private LikeService likeService;
+    @Resource
+    private EventProducer eventProducer;
 
     @PostMapping("/add")
     @ResponseBody
@@ -53,6 +54,16 @@ public class DiscussPostController implements CommunityConstant {
         post.setContent(content);
         post.setCreateTime(new Date());
         discussPostService.addDiscussPost(post);
+
+        //触发发帖事件 存到es
+        Event event = Event.builder()
+                .topic(TOPIC_PUBLISH)
+                .userId(user.getId())
+                .entityType(ENTITY_TYPE_POST)
+                .entityId(post.getId())
+                .build();
+        eventProducer.fireEvent(event);
+
         //后面再对错误统一处理
         return CommunityUtil.getJSONString(SUCCESS, "发布成功!");
     }
