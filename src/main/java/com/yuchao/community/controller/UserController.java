@@ -1,15 +1,13 @@
 package com.yuchao.community.controller;
 
-import com.fasterxml.jackson.databind.Module;
 import com.yuchao.community.anntoation.LoginReuquired;
 import com.yuchao.community.entity.User;
 import com.yuchao.community.service.FollowService;
 import com.yuchao.community.service.LikeService;
-import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.service.UserService;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.HostHolder;
-import com.yuchao.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
@@ -46,7 +43,7 @@ public class UserController implements CommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
     @Autowired
-    private UserSevice userSevice;
+    private UserService userSevice;
     @Autowired
     private HostHolder hostHolder;
     @Autowired

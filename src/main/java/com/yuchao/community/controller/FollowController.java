@@ -5,7 +5,7 @@ import com.yuchao.community.entity.Page;
 import com.yuchao.community.entity.User;
 import com.yuchao.community.event.EventProducer;
 import com.yuchao.community.service.FollowService;
-import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.service.UserService;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.HostHolder;
@@ -33,7 +33,7 @@ public class FollowController implements CommunityConstant {
     @Resource
     private HostHolder hostHolder;
     @Resource
-    private UserSevice userSevice;
+    private UserService userSevice;
     @Resource
     private EventProducer eventProducer;
 

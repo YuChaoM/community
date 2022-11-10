@@ -3,16 +3,11 @@ package com.yuchao.community.controller;
 import com.yuchao.community.entity.DiscussPost;
 import com.yuchao.community.entity.Page;
 import com.yuchao.community.entity.User;
-import com.yuchao.community.mapper.DiscussPostMapper;
-import com.yuchao.community.mapper.UserMapper;
 import com.yuchao.community.service.DiscussPostService;
 import com.yuchao.community.service.LikeService;
-import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.service.UserService;
 import com.yuchao.community.util.CommunityConstant;
-import com.yuchao.community.util.RedisKeyUtil;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +28,7 @@ public class HomeController implements CommunityConstant {
     @Resource
     private DiscussPostService discussPostService;
     @Resource
-    private UserSevice userSevice;
+    private UserService userSevice;
     @Autowired
     private LikeService likeService;
 
@@ -61,5 +56,10 @@ public class HomeController implements CommunityConstant {
     @GetMapping("/error")
     public String getErrorPage() {
         return "error/500";
+    }
+
+    @GetMapping("/denied")
+    public String getDinedPage() {
+        return "error/404";
     }
 }

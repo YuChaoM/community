@@ -5,11 +5,10 @@ import com.yuchao.community.event.EventProducer;
 import com.yuchao.community.service.CommentService;
 import com.yuchao.community.service.DiscussPostService;
 import com.yuchao.community.service.LikeService;
-import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.service.UserService;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.HostHolder;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,7 +32,7 @@ public class DiscussPostController implements CommunityConstant {
     private DiscussPostService discussPostService;
 
     @Autowired
-    private UserSevice userSevice;
+    private UserService userSevice;
     @Autowired
     private CommentService commentService;
     @Autowired
@@ -129,4 +128,64 @@ public class DiscussPostController implements CommunityConstant {
 
         return "/site/discuss-detail";
     }
+
+    //置顶/取消置顶
+    @PostMapping("/top")
+    @ResponseBody
+    public String setTop(int postId) {
+        DiscussPost discussPost = discussPostService.findDiscussPostById(postId);
+        int type = discussPost.getType() ^ 1;//1^1=0,0^1=1
+        discussPostService.updateType(postId, type);
+
+        //触发发帖事件 存到es
+        Event event = Event.builder()
+                .topic(TOPIC_PUBLISH)
+                .userId(hostHolder.getUser().getId())
+                .entityType(ENTITY_TYPE_POST)
+                .entityId(postId)
+                .build();
+        eventProducer.fireEvent(event);
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("type", type);
+        return CommunityUtil.getJSONString(SUCCESS, null,map);
+    }
+
+    //加精，取消加精
+    @PostMapping("/wonderful")
+    @ResponseBody
+    public String setWonderful(int postId) {
+        DiscussPost discussPost = discussPostService.findDiscussPostById(postId);
+        int status = discussPost.getStatus() ^ 1;
+
+        discussPostService.updateStatus(postId, status);
+
+        Event event = Event.builder()
+                .topic(TOPIC_PUBLISH)
+                .userId(hostHolder.getUser().getId())
+                .entityType(ENTITY_TYPE_POST)
+                .entityId(postId)
+                .build();
+        eventProducer.fireEvent(event);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("status",status);
+        return CommunityUtil.getJSONString(SUCCESS, null, map);
+    }
+
+    @PostMapping("/delete")
+    @ResponseBody
+    public String deletePost(int postId) {
+        discussPostService.updateStatus(postId, 2);
+
+        //触发删贴事件
+        Event event = Event.builder()
+                .topic(TOPIC_DELETE)
+                .userId(hostHolder.getUser().getId())
+                .entityType(ENTITY_TYPE_POST)
+                .entityId(postId)
+                .build();
+        eventProducer.fireEvent(event);
+        return CommunityUtil.getJSONString(SUCCESS);
+    }
+
 }

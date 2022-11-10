@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author 蒙宇潮
  * @create 2022-09-28  19:03
  */
+
+@Deprecated
 @Component
 public class LoginRequiredInterceptor implements HandlerInterceptor {
 

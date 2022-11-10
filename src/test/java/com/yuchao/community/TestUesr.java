@@ -2,17 +2,14 @@ package com.yuchao.community;
 
 import com.yuchao.community.entity.User;
 import com.yuchao.community.mapper.UserMapper;
-import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.service.UserService;
 import com.yuchao.community.util.CommunityUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author 蒙宇潮
@@ -25,7 +22,7 @@ public class TestUesr {
     @Autowired
     private UserMapper userMapper;
     @Resource
-    private UserSevice userSevice;
+    private UserService userSevice;
 
     @Test
     public void testSelect() {

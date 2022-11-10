@@ -22,7 +22,7 @@ public class FollowService implements CommunityConstant {
     @Resource
     private RedisTemplate redisTemplate;
     @Resource
-    private UserSevice userSevice;
+    private UserService userSevice;
 
     public void follow(int entityId, int entityType, int userId) {
         redisTemplate.execute(new SessionCallback() {

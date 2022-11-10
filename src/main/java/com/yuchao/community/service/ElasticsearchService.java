@@ -37,7 +37,8 @@ public class ElasticsearchService {
     DiscussPostMapper discussPostMapper;
 
     public void save(int postId) {
-        discussPostRepository.save(discussPostMapper.selectDiscussPostById(postId));
+        DiscussPost post = discussPostMapper.selectDiscussPostById(postId);
+        discussPostRepository.save(post);
     }
 
     public void delete(int postId) {

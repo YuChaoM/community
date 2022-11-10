@@ -1,9 +1,8 @@
 package com.yuchao.community.controller;
 
 import com.google.code.kaptcha.Producer;
-import com.sun.deploy.net.HttpResponse;
 import com.yuchao.community.entity.User;
-import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.service.UserService;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.RedisKeyUtil;
@@ -13,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.jws.WebParam;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -42,7 +41,7 @@ public class LoginController implements CommunityConstant {
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
-    private UserSevice userSevice;
+    private UserService userSevice;
     @Autowired
     private Producer kaptcha;
     @Resource
@@ -149,6 +148,7 @@ public class LoginController implements CommunityConstant {
     @GetMapping("/logout")
     public String logout(@CookieValue("ticket") String ticket) {
         userSevice.logout(ticket);
+        SecurityContextHolder.clearContext();
         return "redirect:/login";
     }
 

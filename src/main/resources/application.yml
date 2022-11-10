@@ -50,9 +50,7 @@ spring:
 
   elasticsearch:
     rest:
-      uris: http://localhost:9200
-
-
+      uris: http://localhost:9201
 
 
 mybatis:

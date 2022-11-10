@@ -4,9 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.yuchao.community.entity.Message;
 import com.yuchao.community.entity.Page;
 import com.yuchao.community.entity.User;
-import com.yuchao.community.mapper.MessageMapper;
 import com.yuchao.community.service.MessageService;
-import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.service.UserService;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.HostHolder;
@@ -31,7 +30,7 @@ public class MessageController implements CommunityConstant {
     @Resource
     private HostHolder hostHolder;
     @Resource
-    private UserSevice userSevice;
+    private UserService userSevice;
 
     @GetMapping("/list")
     public String getLetterList(Model model, Page page) {

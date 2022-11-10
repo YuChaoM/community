@@ -5,7 +5,7 @@ import com.yuchao.community.entity.Page;
 import com.yuchao.community.entity.User;
 import com.yuchao.community.service.ElasticsearchService;
 import com.yuchao.community.service.LikeService;
-import com.yuchao.community.service.UserSevice;
+import com.yuchao.community.service.UserService;
 import com.yuchao.community.util.CommunityConstant;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +27,7 @@ public class SearchController implements CommunityConstant {
     @Resource
     private ElasticsearchService elasticsearchService;
     @Resource
-    private UserSevice userSevice;
+    private UserService userSevice;
     @Resource
     private LikeService likeService;
 
