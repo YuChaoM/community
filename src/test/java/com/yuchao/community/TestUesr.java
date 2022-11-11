@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -57,6 +59,21 @@ public class TestUesr {
         String password = CommunityUtil.md5("123456" + salt);
         System.out.println(userMapper.updatePassword(158, password, salt));
 
+    }
+
+    @Test
+    public void testCalender() {
+        Date date = new Date(2000000000);
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+        System.out.println(df.format(date));
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+//        calendar.after() 要传入Calendar实例，不然都是false
+        System.out.println(calendar.after(new Date(2000100000)));
+        calendar.add(Calendar.DATE,10);
+        System.out.println(calendar.after(new Date(2000100000)));
+        System.out.println(calendar);
     }
 
 

@@ -53,13 +53,14 @@ function setWonderful() {
 }
 
 function setDelete() {
+   var id =  $("#postId").val()
     $.post(
         CONTEXT_PATH + "/discuss/delete",
-        {"dosId": $("#postId").val()},
+        {"postId": id},
         function (data) {
             data = $.parseJSON(data);
             if (data.code == 200) {
-                location.href = CONTEXT_PATH = "/index";
+                location.href = CONTEXT_PATH + "/index";
             } else {
                 alert(data.msg);
             }

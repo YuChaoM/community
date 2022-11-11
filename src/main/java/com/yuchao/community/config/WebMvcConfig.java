@@ -1,5 +1,6 @@
 package com.yuchao.community.config;
 
+import com.yuchao.community.controller.interceptor.DataInterceptor;
 import com.yuchao.community.controller.interceptor.LoginRequiredInterceptor;
 import com.yuchao.community.controller.interceptor.LoginTicketInterceptor;
 import com.yuchao.community.controller.interceptor.MessageInterceptor;
@@ -18,14 +19,15 @@ import javax.annotation.Resource;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Autowired
-    LoginTicketInterceptor loginTicketInterceptor;
+    private LoginTicketInterceptor loginTicketInterceptor;
 
 //    @Autowired
 //    LoginRequiredInterceptor loginRequiredInterceptor;
 
     @Resource
-    MessageInterceptor messageInterceptor;
-
+    private MessageInterceptor messageInterceptor;
+    @Resource
+    private DataInterceptor dataInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //执行顺序和注册顺序有关
@@ -37,6 +39,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
 
         registry.addInterceptor(messageInterceptor)
+                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
+
+        registry.addInterceptor(dataInterceptor)
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
     }
 

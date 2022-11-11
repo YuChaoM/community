@@ -70,6 +70,9 @@ public class DiscussPostController implements CommunityConstant {
     @GetMapping("/detail/{id}")
     public String getDiscussPost(@PathVariable("id") Integer id, Model model, Page page) {
         DiscussPost post = discussPostService.findDiscussPostById(id);
+        if (post.getStatus() == 2) {
+            throw new RuntimeException();
+        }
         User user = userSevice.findUserById(post.getUserId());
         model.addAttribute("post", post);
         model.addAttribute("user", user);//是否需要dto呢？
