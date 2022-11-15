@@ -50,7 +50,32 @@ spring:
 
   elasticsearch:
     rest:
-      uris: http://localhost:9201
+      uris: http://localhost:9200
+
+#TaskExceutionProperties
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 15
+        queue-capacity: 100  #缓冲队列
+
+#    定时任务的线程池 TaskSchedulingProperties
+    scheduling:
+      pool:
+        size: 5
+
+# QuartzProperties
+  quartz:
+    job-store-type: jdbc
+    scheduler-name: communityScheduler
+    properties:
+      org.quartz.scheduler.instanceId: AUTO
+      org.quartz.jobStore.class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+      org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+      org.quartz.jobStore.isClustered: true
+      org.quartz.threadPool.class: org.quartz.simpl.SimpleThreadPool
+      org.quartz.threadPool.threadCount: 5
 
 
 mybatis:

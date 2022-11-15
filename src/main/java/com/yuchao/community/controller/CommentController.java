@@ -9,7 +9,9 @@ import com.yuchao.community.service.CommentService;
 import com.yuchao.community.service.DiscussPostService;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.HostHolder;
+import com.yuchao.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +39,8 @@ public class CommentController implements CommunityConstant {
     private DiscussPostService discussPostService;
     @Resource
     private EventProducer eventProducer;
+    @Resource
+    private RedisTemplate redisTemplate;
 
     //    discussPostId可能会有一个异常，可能是非数
     @PostMapping("/add/{discussPostId}")
@@ -68,7 +72,7 @@ public class CommentController implements CommunityConstant {
         eventProducer.fireEvent(event);
 
         if (comment.getEntityType() == ENTITY_TYPE_POST) {
-            //触发事件
+            //触发发帖事件 es
             event = Event.builder()
                     .topic(TOPIC_PUBLISH)
                     .userId(user.getId())
@@ -76,6 +80,9 @@ public class CommentController implements CommunityConstant {
                     .entityId(discussPostId)
                     .build();
             eventProducer.fireEvent(event);
+            //计算帖子分数
+            String redisKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey, discussPostId);
         }
 
         return "redirect:/discuss/detail/" + discussPostId;

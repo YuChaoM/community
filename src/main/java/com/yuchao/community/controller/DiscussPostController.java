@@ -9,7 +9,9 @@ import com.yuchao.community.service.UserService;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.HostHolder;
+import com.yuchao.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +32,6 @@ public class DiscussPostController implements CommunityConstant {
 
     @Autowired
     private DiscussPostService discussPostService;
-
     @Autowired
     private UserService userSevice;
     @Autowired
@@ -39,6 +40,8 @@ public class DiscussPostController implements CommunityConstant {
     private LikeService likeService;
     @Resource
     private EventProducer eventProducer;
+    @Resource
+    private RedisTemplate redisTemplate;
 
     @PostMapping("/add")
     @ResponseBody
@@ -62,6 +65,10 @@ public class DiscussPostController implements CommunityConstant {
                 .entityId(post.getId())
                 .build();
         eventProducer.fireEvent(event);
+
+        //计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey,post.getId());
 
         //后面再对错误统一处理
         return CommunityUtil.getJSONString(SUCCESS, "发布成功!");
@@ -172,6 +179,11 @@ public class DiscussPostController implements CommunityConstant {
         eventProducer.fireEvent(event);
         HashMap<String, Object> map = new HashMap<>();
         map.put("status",status);
+
+        //计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, postId);
+
         return CommunityUtil.getJSONString(SUCCESS, null, map);
     }
 

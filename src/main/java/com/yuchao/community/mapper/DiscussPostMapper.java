@@ -12,7 +12,8 @@ import java.util.List;
 
 public interface DiscussPostMapper {
 
-    List<DiscussPost> selectDiscussPost(@Param("userId") Integer userId, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<DiscussPost> selectDiscussPost(@Param("userId") Integer userId, @Param("offset") Integer offset,
+                                        @Param("limit") Integer limit,@Param("orderMode") int orderMode);
 
     int selectDiscussPostTotal(@Param("userId") Integer userId);
 
@@ -26,4 +27,5 @@ public interface DiscussPostMapper {
 
     int updateStatus(@Param("id") int id, @Param("status") int status);
 
+    void updateScore(@Param("id")int postId,@Param("score") double score);
 }

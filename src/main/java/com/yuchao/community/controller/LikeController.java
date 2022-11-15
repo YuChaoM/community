@@ -7,7 +7,9 @@ import com.yuchao.community.service.LikeService;
 import com.yuchao.community.util.CommunityConstant;
 import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.HostHolder;
+import com.yuchao.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,12 +24,14 @@ import java.util.HashMap;
 @Controller
 public class LikeController implements CommunityConstant {
 
-    @Autowired
+    @Resource
     private LikeService likeService;
-    @Autowired
+    @Resource
     private HostHolder hostHolder;
     @Resource
     private EventProducer eventProducer;
+    @Resource
+    private RedisTemplate redisTemplate;
 
     @PostMapping("/like")
     @ResponseBody
@@ -58,6 +62,10 @@ public class LikeController implements CommunityConstant {
                     .build();
             eventProducer.fireEvent(event);
         }
+        //计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, discussPostId);
+
         return CommunityUtil.getJSONString(SUCCESS, null, map);
     }
 

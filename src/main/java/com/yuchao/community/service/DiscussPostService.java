@@ -2,11 +2,9 @@ package com.yuchao.community.service;
 
 import com.yuchao.community.entity.DiscussPost;
 import com.yuchao.community.mapper.DiscussPostMapper;
-import com.yuchao.community.util.CommunityUtil;
 import com.yuchao.community.util.SensitiveFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
@@ -25,8 +23,8 @@ public class DiscussPostService {
     private SensitiveFilter sensitiveFilter;
 
 
-    public List<DiscussPost> findDiscussPosts(Integer userId, Integer offset, Integer limit) {
-        return discussPostMapper.selectDiscussPost(userId, offset, limit);
+    public List<DiscussPost> findDiscussPosts(Integer userId, Integer offset, Integer limit, int orderMode) {
+        return discussPostMapper.selectDiscussPost(userId, offset, limit,orderMode);
     }
 
     public int findDiscussPostRows(Integer userId) {
@@ -62,4 +60,7 @@ public class DiscussPostService {
         return discussPostMapper.updateStatus(id, status);
     }
 
+    public void updateScore(int postId, double score) {
+        discussPostMapper.updateScore(postId, score);
+    }
 }
