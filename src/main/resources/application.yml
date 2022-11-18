@@ -97,3 +97,8 @@ mybatis:
 community.path:
   domain: http://localhost:8080
   upload: E:\Users\Desktop\community\image
+
+
+wk.image:
+  command: D:/app/wkhtmltopdf/bin/wkhtmltoimage
+  storage: D:/Software/data/wk-images

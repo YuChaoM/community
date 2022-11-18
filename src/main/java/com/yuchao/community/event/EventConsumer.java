@@ -11,10 +11,12 @@ import com.yuchao.community.util.CommunityConstant;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +35,12 @@ public class EventConsumer implements CommunityConstant {
     private MessageService messageService;
     @Resource
     private ElasticsearchService elasticsearchService;
+
+    @Value("${wk.image.storage}")
+    private String wkImageStorage;
+
+    @Value("${wk.image.command}")
+    private String wkCommand;
 
     @KafkaListener(topics = {TOPIC_COMMENT, TOPIC_FOLLOW, TOPIC_LIKE})
     public void handleCommentMessage(ConsumerRecord record) {
@@ -98,5 +106,39 @@ public class EventConsumer implements CommunityConstant {
             return;
         }
         elasticsearchService.delete(event.getEntityId());
+    }
+
+    @KafkaListener(topics = {TOPIC_SHARE})
+    public void handleShare(ConsumerRecord record) {
+        if (record == null || record.value() == null) {
+            logger.error("消息内容为空!");
+            return;
+        }
+
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null) {
+            logger.error("消息格式错误!");
+            return;
+        }
+        String htmlUrl = (String) event.getData().get("htmlUrl");
+        String fileName = (String) event.getData().get("fileName");
+        String suffix = (String) event.getData().get("suffix");
+
+        StringBuilder sb = new StringBuilder();
+        String cmd = sb.append(wkCommand)
+                .append(" --quality 75 ")
+                .append(htmlUrl)
+                .append(" ")
+                .append(wkImageStorage)
+                .append("/")
+                .append(fileName)
+                .append(suffix).toString();
+
+        try {
+            Runtime.getRuntime().exec(cmd);
+            logger.info("生成长图成功: " + cmd);
+        } catch (IOException e) {
+            logger.error("生成长图失败:" + e);
+        }
     }
 }

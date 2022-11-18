@@ -108,6 +108,8 @@ public class ThreadPoolTests {
         };
         Date startTime = new Date(System.currentTimeMillis() + 10000);
         taskScheduler.scheduleAtFixedRate(task, startTime, 1000);
+//        taskScheduler.scheduleAtFixedRate(task, 1000);//1秒后开始执行，间隔1秒
+        System.out.println("aa");
         sleep(30000);
     }
 
