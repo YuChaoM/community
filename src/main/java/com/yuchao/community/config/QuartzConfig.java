@@ -1,6 +1,7 @@
 package com.yuchao.community.config;
 
 import com.yuchao.community.quartz.AlphaJob;
+import com.yuchao.community.quartz.DeleteTempFileJob;
 import com.yuchao.community.quartz.PostScoreRefreshJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -64,6 +65,29 @@ public class QuartzConfig {
         factoryBean.setName("postScoreRefreshTrigger");
         factoryBean.setGroup("communityTriggerGroup");
         factoryBean.setRepeatInterval(1000 * 60 * 5);//间隔时间
+        factoryBean.setJobDataMap(new JobDataMap());
+        return factoryBean;
+    }
+
+
+    @Bean
+    public JobDetailFactoryBean deleteTempFileJobDetail() {
+        JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();
+        factoryBean.setJobClass(DeleteTempFileJob.class);
+        factoryBean.setName("deleteTempFileJob");
+        factoryBean.setGroup("communityJobGroup");
+        factoryBean.setDurability(true);
+        factoryBean.setRequestsRecovery(true);
+        return factoryBean;
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean deleteTempFileJobTrigger(JobDetail deleteTempFileJobDetail) {
+        SimpleTriggerFactoryBean factoryBean = new SimpleTriggerFactoryBean();
+        factoryBean.setJobDetail(deleteTempFileJobDetail);
+        factoryBean.setName("deleteTempFileTrigger");
+        factoryBean.setGroup("communityTriggerGroup");
+        factoryBean.setRepeatInterval(1000 * 60 * 4);//间隔时间
         factoryBean.setJobDataMap(new JobDataMap());
         return factoryBean;
     }

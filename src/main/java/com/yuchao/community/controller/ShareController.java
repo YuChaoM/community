@@ -42,6 +42,12 @@ public class ShareController implements CommunityConstant {
     @Value("${wk.image.storage}")
     private String wkImageStorage;
 
+    @Value("${aliyun.oss.endpoint}")
+    private String endpoint;
+
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName;
+
     @GetMapping("/share")
     @ResponseBody
     public String share(String htmlUrl) {
@@ -62,11 +68,12 @@ public class ShareController implements CommunityConstant {
 
         //返回访问路径
         HashMap<String, Object> url = new HashMap<>();
-        url.put("shareUrl", domain + contextPath + "/share/image/" + fileName);
+//        url.put("shareUrl", domain + contextPath + "/share/image/" + fileName);
+        url.put("shareUrl", "https://" + bucketName + "." + endpoint + "/" + fileName);
         return CommunityUtil.getJSONString(SUCCESS, null, url);
     }
 
-    //获取长图
+    //获取长图 已废弃
     @GetMapping("/share/image/{fileName}")
     public void getShareImage(@PathVariable("fileName") String fileName, HttpServletResponse response) {
 
@@ -81,7 +88,7 @@ public class ShareController implements CommunityConstant {
             byte[] buffer = new byte[1024];
             int b = 0;
             while ((b = is.read(buffer)) != -1) {
-                os.write(buffer,0,b);//读多少写多少
+                os.write(buffer, 0, b);//读多少写多少
             }
         } catch (IOException e) {
             logger.error("获取长图失败: " + e);

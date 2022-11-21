@@ -46,7 +46,7 @@ public interface CommunityConstant {
     int SUCCESS = 200;
 
     /**
-     * 请求被接收处理，但是改处理不完整
+     * 请求被接收处理，但是该处理不完整
      */
     int ACCEPTED = 202;
 

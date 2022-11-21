@@ -1,5 +1,11 @@
 package com.yuchao.community.controller;
 
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.common.utils.BinaryUtil;
+import com.aliyun.oss.model.MatchMode;
+import com.aliyun.oss.model.PolicyConditions;
 import com.yuchao.community.anntoation.LoginReuquired;
 import com.yuchao.community.entity.User;
 import com.yuchao.community.service.FollowService;
@@ -23,6 +29,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -40,21 +48,72 @@ public class UserController implements CommunityConstant {
 
     @Value("${community.path.upload}")
     private String uploadPath;
+
     @Value("${server.servlet.context-path}")
     private String contextPath;
+
     @Autowired
-    private UserService userSevice;
+    private UserService userService;
+
     @Autowired
     private HostHolder hostHolder;
+
     @Autowired
     private LikeService likeService;
+
     @Resource
     private FollowService followService;
 
+    @Value("${aliyun.oss.endpoint}")
+    private String endpoint;
+
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName;
+
+    @Value("${aliyun.oss.accessKeyId}")
+    private String accessKeyId;
+
+    @Resource
+    OSS ossClient;
+
     @LoginReuquired
     @GetMapping("/setting")
-    public String getSettingPage() {
+    public String getSettingPage(Model model) {
+        String dir = "header/";
+        // 直传有效截止时间
+        long expireEndTime = System.currentTimeMillis() + 60 * 1000;
+        // 上传文件名称,可以设置目录
+        String fileName = dir + CommunityUtil.generateUUID();
+        PolicyConditions policyConditions = new PolicyConditions();
+        // 设置上传文件的前缀、可忽略
+        policyConditions.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
+        // 生成policy
+        String postPolicy = ossClient.generatePostPolicy(new Date(expireEndTime), policyConditions);
+        byte[] binaryData = postPolicy.getBytes(StandardCharsets.UTF_8);
+        String policy = BinaryUtil.toBase64String(binaryData);
+        // 生成签名
+        String signature = ossClient.calculatePostSignature(postPolicy);
+
+        model.addAttribute("accessKeyId", accessKeyId);
+        model.addAttribute("policy", policy);
+        model.addAttribute("signature", signature);
+        model.addAttribute("fileName", fileName);
+        model.addAttribute("host", "https://" + bucketName + "." + endpoint);
         return "/site/setting";
+    }
+
+    //更新头像路径
+    @PostMapping("/header/url")
+    @ResponseBody
+    public String updateHeaderUrl(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return CommunityUtil.getJSONString(ACCEPTED, "文件名不能为空!");
+        }
+
+        String url = "https://" + bucketName + "." + endpoint + "/" + fileName;
+        userService.updateAvatarUrl(hostHolder.getUser().getId(), url);
+
+        return CommunityUtil.getJSONString(SUCCESS);
     }
 
     @LoginReuquired
@@ -82,10 +141,11 @@ public class UserController implements CommunityConstant {
 
         User user = hostHolder.getUser();
         String url = domain + contextPath + "/user/header/" + filename;
-        userSevice.updateAvatarUrl(user.getId(), url);
+        userService.updateAvatarUrl(user.getId(), url);
         return "redirect:/index";
     }
 
+    //废弃
     @LoginReuquired
     @GetMapping("/header/{filename}")
     public void getAvatarUrl(@PathVariable("filename") String filename, HttpServletResponse response) {
@@ -122,7 +182,7 @@ public class UserController implements CommunityConstant {
         }
         String salt = CommunityUtil.generateUUID().substring(0, 5);
         password = CommunityUtil.md5(password + salt);
-        userSevice.updatePassword(user.getId(), password, salt);
+        userService.updatePassword(user.getId(), password, salt);
         return "redirect:/index";
     }
 
@@ -131,17 +191,17 @@ public class UserController implements CommunityConstant {
     public String getEmialCode(String email, HttpSession session) {
         if (StringUtils.isBlank(email)) {
             //返回json
-            return CommunityUtil.getJSONString(ACCEPTED,"邮箱不能为空!");
+            return CommunityUtil.getJSONString(ACCEPTED, "邮箱不能为空!");
         }
         String code = CommunityUtil.generateUUID().substring(0, 5);
-        session.setAttribute("code",code);
-        userSevice.sendEmailCode(email,code);
+        session.setAttribute("code", code);
+        userService.sendEmailCode(email, code);
         //放回响应状态
         return CommunityUtil.getJSONString(SUCCESS, "发送给成功!");
     }
 
     @PostMapping("/forget")
-    public String forgetPassword(String email,String code,String newPassword,
+    public String forgetPassword(String email, String code, String newPassword,
                                  HttpSession session, Model model) {
         //校验验证码
         String kaptcha = (String) session.getAttribute("code");
@@ -149,12 +209,12 @@ public class UserController implements CommunityConstant {
             model.addAttribute("codeMsg", "验证码不正确");
             return "site/forget";
         }
-        Map<String, Object> map = userSevice.forgetPassword(email, newPassword);
-        if (map== null || map.isEmpty()) {
+        Map<String, Object> map = userService.forgetPassword(email, newPassword);
+        if (map == null || map.isEmpty()) {
             model.addAttribute("msg", "密码找回成功");
             model.addAttribute("target", "/login");
             return "/site/operate-result";
-        }else {
+        } else {
             model.addAttribute("emailMsg", map.get("emailMsg"));
             model.addAttribute("passwordMsg", map.get("passwordMsg"));
             return "redirect:/login";
@@ -162,8 +222,8 @@ public class UserController implements CommunityConstant {
     }
 
     @GetMapping("/profile/{userId}")
-    public String getProfilePage(@PathVariable("userId") int userId,Model model) {
-        User user = userSevice.findUserById(userId);
+    public String getProfilePage(@PathVariable("userId") int userId, Model model) {
+        User user = userService.findUserById(userId);
         if (user == null) {
             throw new IllegalArgumentException("用户不存在");
         }

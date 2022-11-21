@@ -52,7 +52,6 @@
         update user
         set avatar_url=#{url}
         where id = #{id}
-
     </update>
 
     <update id="updateStatus">
